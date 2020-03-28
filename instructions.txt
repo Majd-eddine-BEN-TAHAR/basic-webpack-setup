@@ -1,0 +1,225 @@
+<!-- 1 - create package.json -->
+
+npm init -y
+
+<!-- 2 - create src folder -->
+
+create a src folder that contain all your
+files index.html
+CSS/style.css
+JS/index.js
+JS/_variable.js
+JS/_function.js
+
+<!-- 3 - install webpack -->
+
+npm install -D webpack webpack-cli webpack-dev-server
+
+<!-- 4 - in your ROOT folder create two files one for production and the other for the development -->
+
+webpack.prod.js
+webpack.dev.js
+
+<!-- 5 - go to package.json and add the build scripts one for production and one for developement -->
+
+"build-prod": "webpack --config webpack.prod.js",
+"build-dev": "webpack-dev-server --config webpack.dev.js"
+
+<!-- 6 - for developmenet you need to install 2 plugins and they should be in the devDependencies and not in the dependencies attribute in the package.json
+just add -D and everything will be good
+and you just need one plugin for the production
+and he's the same html-webpack-plugin the same like for developement
+-->
+
+npm install -D clean-webpack-plugin html-webpack-plugin
+
+<!-- 7 - install babel to target all browsers -->
+<!-- the -D attribute it's added because it's a developement
+dependecy and we don't need it when we serve our app
+to the user, so it's just available during development process-->
+
+npm i -D @babel/core @babel/preset-env babel-loader
+
+<!-- 8 - In your Root Directory create a
+.babelrc  file-->
+
+.babelrc
+
+<!-- 9 - add this configuration to .babelrc -->
+<!-- if anything is like error in .babelrc
+don't think about it's something normal
+-->
+
+{ ‘presets’: ['@babel/preset-env'] }
+
+<!-- 10  - add a loader for sass and css-->
+
+npm i -D node-sass css-loader sass-loader
+
+<!-- 11 - install postCSS and autoprefixer -->
+
+npm i -D autoprefixer postcss-loader
+
+<!-- 12 create a file and name it post postcss.config.js -->
+
+postcss.config.js
+
+<!-- 13 in postcss.config.js add this configuration -->
+
+module.exports = {
+plugins: [require("autoprefixer")]
+};
+
+<!-- 14 in you package.json add this attribute for the
+browsers i want to target -->
+
+"browserslist": [
+"defaults",
+"not ie < 11",
+"last 2 versions",
+"> 1%",
+"iOS 7",
+"last 3 iOS versions"
+]
+
+<!-- 15 - add this plugin to export css in a main.bundle.css file -->
+
+npm i -D mini-css-extract-plugin
+
+<!-- 16 - install this plugin to copy all your images in the dist folder-->
+
+npm install -D copy-webpack-plugin
+
+<!-- 17 - install this two plugins to convert icons to base64 if
+it possible to do that or just add them in the dist folder in icons folder -->
+
+npm install -D url-loader file-loader
+
+<!-- 18- add this to your webpack.dev.js -->
+const path = require("path");
+const webpack = require("webpack");
+const { CleanWebpackPlugin } = require("clean-webpack-plugin");
+const HtmlWebPackPlugin = require("html-webpack-plugin");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const CopyWebpackPlugin = require("copy-webpack-plugin");
+
+module.exports = {
+  entry: "./src/js/index.js",
+  output: {
+    filename: "./app.bundle.js"
+    // path: path.resolve(__dirname, "dist")
+    // publicPath: "dist"
+  },
+  mode: "development",
+  devtool: "cheap-module-eval-source-map",
+  module: {
+    rules: [
+      {
+        test: "/.js$/",
+        exclude: /node_modules/,
+        loader: "babel-loader"
+      },
+      {
+        test: /\.scss$/,
+        use: [
+          MiniCssExtractPlugin.loader,
+          "css-loader",
+          "postcss-loader",
+          "sass-loader"
+        ]
+      },
+      {
+        test: /\.(png|jp(e*)g|svg)$/,
+        use: [
+          {
+            loader: "url-loader",
+            options: {
+              limit: 10000, // Convert images < 10kb to base64 strings
+              name: "images/[hash]-[name].[ext]"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  plugins: [
+    new CleanWebpackPlugin({
+      dry: true,
+      verbose: true,
+      cleanStaleWebpackAssets: true,
+      protectWebpackAssets: false
+    }),
+    new HtmlWebPackPlugin({
+      hash: true,
+      template: "./src/views/index.html",
+      filename: "./index.html"
+    }),
+    new MiniCssExtractPlugin({ filename: "main.bundle.css" }),
+    new CopyWebpackPlugin([{ from: "./src/images", to: "./images" }])
+  ]
+};
+
+<!-- 19 - add this to webpack.prod.js -->
+
+const path = require("path");
+const webpack = require("webpack");
+const { CleanWebpackPlugin } = require("clean-webpack-plugin");
+const HtmlWebPackPlugin = require("html-webpack-plugin");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const CopyWebpackPlugin = require("copy-webpack-plugin");
+
+module.exports = {
+  entry: "./src/js/index.js",
+  output: {
+    filename: "./app.bundle.js"
+    // path: path.resolve(__dirname, "dist")
+    // publicPath: "dist"
+  },
+  mode: "production",
+  devtool: "cheap-source-map",
+  module: {
+    rules: [
+      {
+        test: "/.js$/",
+        exclude: /node_modules/,
+        loader: "babel-loader"
+      },
+      {
+        test: /\.scss$/,
+        use: [
+          MiniCssExtractPlugin.loader,
+          "css-loader",
+          "postcss-loader",
+          "sass-loader"
+        ]
+      },
+      {
+        test: /\.(png|jp(e*)g|svg)$/,
+        use: [
+          {
+            loader: "url-loader",
+            options: {
+              limit: 10000, // Convert images < 8kb to base64 strings
+              name: "icons/[hash]-[name].[ext]"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  plugins: [
+    new CleanWebpackPlugin({
+      dry: true,
+      verbose: true,
+      cleanStaleWebpackAssets: true,
+      protectWebpackAssets: false
+    }),
+    new HtmlWebPackPlugin({
+      hash: true,
+      template: "./src/views/index.html",
+      filename: "./index.html"
+    }),
+    new MiniCssExtractPlugin({ filename: "main.bundle.css" }),
+    new CopyWebpackPlugin([{ from: "./src/images", to: "./images" }])
+  ]
+};
