@@ -95,7 +95,11 @@ it possible to do that or just add them in the dist folder in icons folder -->
 
 npm install -D url-loader file-loader
 
-<!-- 18- add this to your webpack.dev.js -->
+<!-- 18  - install this 2 plugins for optimizing your files -->
+npm i -D optimize-css-assets-webpack-plugin
+npm i -D terser-webpack-plugin
+
+<!-- 19- add this to your webpack.dev.js -->
 const path = require("path");
 const webpack = require("webpack");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
@@ -159,14 +163,15 @@ module.exports = {
   ]
 };
 
-<!-- 19 - add this to webpack.prod.js -->
-
+<!-- 20 - add this to webpack.prod.js -->
 const path = require("path");
 const webpack = require("webpack");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const HtmlWebPackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
+const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
+const TerserPlugin = require("terser-webpack-plugin");
 
 module.exports = {
   entry: "./src/js/index.js",
@@ -176,6 +181,9 @@ module.exports = {
     // publicPath: "dist"
   },
   mode: "production",
+  optimization: {
+    minimizer: [new TerserPlugin({}), new OptimizeCSSAssetsPlugin({})]
+  },
   devtool: "cheap-source-map",
   module: {
     rules: [
