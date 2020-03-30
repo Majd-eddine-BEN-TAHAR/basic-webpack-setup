@@ -1,17 +1,11 @@
 const path = require("path");
 const webpack = require("webpack");
-const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const HtmlWebPackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 
 module.exports = {
   entry: "./src/js/index.js",
-  output: {
-    filename: "./app.bundle.js"
-    // path: path.resolve(__dirname, "dist")
-    // publicPath: "dist"
-  },
   mode: "development",
   devtool: "cheap-module-eval-source-map",
   module: {
@@ -45,12 +39,6 @@ module.exports = {
     ]
   },
   plugins: [
-    new CleanWebpackPlugin({
-      dry: true,
-      verbose: true,
-      cleanStaleWebpackAssets: true,
-      protectWebpackAssets: false
-    }),
     new HtmlWebPackPlugin({
       hash: true,
       template: "./src/views/index.html",

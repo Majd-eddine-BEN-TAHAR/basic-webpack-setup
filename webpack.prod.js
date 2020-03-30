@@ -10,8 +10,8 @@ const TerserPlugin = require("terser-webpack-plugin");
 module.exports = {
   entry: "./src/js/index.js",
   output: {
-    filename: "./app.bundle.js"
-    // path: path.resolve(__dirname, "dist")
+    filename: "app.bundle.js",
+    path: path.resolve(__dirname, "dist")
     // publicPath: "dist"
   },
   mode: "production",
@@ -59,7 +59,8 @@ module.exports = {
     new HtmlWebPackPlugin({
       hash: true,
       template: "./src/views/index.html",
-      filename: "./index.html"
+      filename: "index.html",
+      path: path.resolve(__dirname, "dist")
     }),
     new MiniCssExtractPlugin({ filename: "main.bundle.css" }),
     new CopyWebpackPlugin([{ from: "./src/images", to: "./images" }])
